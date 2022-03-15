@@ -3,3 +3,5 @@ build/*
 .ipynb_checkpoints/*
 .vscode/*
 data/*
+venv/
+output/

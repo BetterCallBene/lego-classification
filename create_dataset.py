@@ -19,7 +19,6 @@ import numpy as np
 import os
 import fiftyone as fo
 from bs4 import BeautifulSoup
-from fastai.vision.all import *
 
 # %%
 dataset_name = "lego-classification"
@@ -99,26 +98,27 @@ def read_xml_file(annotation_path):
 files = glob.glob(annotations_patt)
 
 samples = []
-for index, annotation_file in zip(range(0, len(files)), files):
-    #print("Parse File: {0} from {1}".format(index + 1, len(files)))
-    result, image_path, elms = read_xml_file(annotation_file)
-    if not result:
-        print("File was skiped.")
-        continue
+with fo.ProgressBar() as pb:
+    for index, annotation_file in pb(zip(range(0, len(files)), files)):
+        #print("Parse File: {0} from {1}".format(index + 1, len(files)))
+        result, image_path, elms = read_xml_file(annotation_file)
+        if not result:
+            print("File was skiped.")
+            continue
 
-    sample = fo.Sample(filepath=image_path)
-    
+        sample = fo.Sample(filepath=image_path)
+        
 
-    detections = []
+        detections = []
 
-    for elm in elms:
-                
-        detections.append(
-            fo.Detection(label=elm['label'], bounding_box=elm['bbox'])
-        )
+        for elm in elms:
+                    
+            detections.append(
+                fo.Detection(label=elm['label'], bounding_box=elm['bbox'])
+            )
 
-    sample["ground_truth"] = fo.Detections(detections=detections)
-    samples.append(sample)
+        sample["ground_truth"] = fo.Detections(detections=detections)
+        samples.append(sample)
     
 
 # %%
